@@ -1,26 +1,55 @@
-import { Box, Button, Flex, Text } from "@chakra-ui/react";
+import { Box, Button, Collapse, Flex, Slide, Text, useDisclosure } from "@chakra-ui/react";
+import { collection, getDocs, getFirestore } from "firebase/firestore";
 import { PlusCircle } from "phosphor-react";
-import { useState } from "react";
-import SideMenu from "../src/components/SideMenu/SideMenu";
+import { useEffect, useState } from "react";
+import InvoiceCard from "./components/InvoiceCard/InvoiceCard";
 import NewInvoiceModal from "./components/NewInvoiceModal/NewInvoiceModal";
+import { db } from "../src/firebase/config";
+import { ICardDetails } from "./@types/types";
 
 function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   function handleOpenModal() {
     setIsModalOpen(true);
-    console.log("abre", isModalOpen);
   }
   function handleCloseModal() {
     setIsModalOpen(false);
-    console.log("fecha", isModalOpen);
   }
 
+  const [invoices, setInvoices] = useState([]);
+
+  const userCollectionRef = collection(db, "invoices");
+
+  useEffect(() => {
+    const getInvoices = async () => {
+      const data = await getDocs(userCollectionRef);
+      setInvoices(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    };
+    getInvoices();
+  }, []);
+
   return (
-    <Box w="100%" h="100vh" display="flex">
-      <SideMenu />
-      <Flex w="100%" h="20" alignItems="center" justifyContent="space-evenly" justifyItems="center">
-        <Text fontSize="3xl">Invoices</Text>
+    <Box
+      w="100%"
+      h="100vh"
+      display="flex"
+      flexDir="column"
+      alignItems="center"
+      justifyItems="center"
+    >
+      <Flex
+        w="100%"
+        h="20"
+        alignItems="center"
+        justifyContent="space-evenly"
+        justifyItems="center"
+        mt={20}
+      >
+        <Text fontSize="4xl" fontWeight="semibold">
+          Invoices
+        </Text>
+
         <Button
           bgColor="purple.500"
           _hover={{ bgColor: "purple.600" }}
@@ -30,7 +59,20 @@ function App() {
           <PlusCircle size={32} />
           New invoice
         </Button>
-        <NewInvoiceModal isOpen={isModalOpen} onRequestClose={handleCloseModal} />
+
+        <NewInvoiceModal isModalOpen={isModalOpen} onRequestClose={handleCloseModal} />
+      </Flex>
+      <Flex>
+        {invoices.map((invoice: ICardDetails) => (
+          <InvoiceCard
+            key={invoice.id}
+            id={invoice.invoice_id}
+            name={invoice.client_name}
+            date={invoice.date}
+            status={invoice.status}
+            total={invoice.total_invoice}
+          />
+        ))}
       </Flex>
     </Box>
   );

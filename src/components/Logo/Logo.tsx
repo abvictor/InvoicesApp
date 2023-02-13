@@ -3,7 +3,7 @@ import logo from "../../assets/logo.png";
 
 const Logo = () => {
   return (
-    <Box w={["28", "32"]}>
+    <Box w={["24", "28"]}>
       <img src={logo} alt="Invoice logo" />
     </Box>
   );
