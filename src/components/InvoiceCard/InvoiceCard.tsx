@@ -1,38 +1,48 @@
 import { Box, Grid, GridItem, Text } from "@chakra-ui/react";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
 import { BsFillCircleFill } from "react-icons/bs";
-import { CardDetails } from "../../@types/themes";
+import { ICardDetails } from "../../@types/types";
+import { format, parse } from "date-fns";
 
-const InvoiceCard = ({ id, date, name, total, status }: CardDetails) => {
+const InvoiceCard = ({ id, date, name, total, status }: ICardDetails) => {
+  let formatedDate = format(new Date(), "dd-MMM-yyyy").replaceAll("-", " ");
+  console.log(formatedDate);
   return (
     <Box
       display="flex"
+      p="4"
       alignItems="center"
+      textAlign="center"
       justifyContent="center"
       w="53rem"
-      h="24"
+      h="20"
       bgColor="gray.800"
       borderRadius="12"
       _hover={{ border: "1px", borderColor: "purple.400" }}
     >
-      <Grid templateColumns="repeat(5, 1fr) 0.10fr" gap={10}>
+      <Grid
+        templateColumns="repeat(5, 1fr) 0.15fr"
+        gap={10}
+        justifyContent="center"
+        alignItems="center"
+      >
         <GridItem display="flex" alignItems="center" gap={1}>
           <Text fontSize="lg" fontWeight="semibold" color="purple.500">
             #
           </Text>
-          <Text fontSize="lg" fontWeight="semibold">
-            3080
+          <Text fontSize="sm" fontWeight="semibold">
+            {id}
           </Text>
         </GridItem>
         <GridItem>
-          <Text fontSize="lg">17 Aug 2021</Text>
+          <Text fontSize="sm">{formatedDate}</Text>
         </GridItem>
         <GridItem>
-          <Text fontSize="lg">Victor Amaral</Text>
+          <Text fontSize="sm">{name}</Text>
         </GridItem>
         <GridItem>
-          <Text fontSize="lg" fontWeight="semibold">
-            $ 144,60
+          <Text fontSize="xl" fontWeight="semibold">
+            {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(total)}
           </Text>
         </GridItem>
         <GridItem
@@ -40,12 +50,13 @@ const InvoiceCard = ({ id, date, name, total, status }: CardDetails) => {
           display="flex"
           alignItems="center"
           justifyContent="center"
+          h="8"
           gap={2}
           bgColor="green.500"
         >
           <BsFillCircleFill size={8} />
           <Text fontSize="lg" fontWeight="semibold" opacity={0.9}>
-            Paid
+            {status}
           </Text>
         </GridItem>
         <GridItem>

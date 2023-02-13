@@ -1,11 +1,13 @@
-import { Box, Button, Flex, Slide, Text, useDisclosure } from "@chakra-ui/react";
+import { Box, Button, Collapse, Flex, Slide, Text, useDisclosure } from "@chakra-ui/react";
+import { collection, getDocs, getFirestore } from "firebase/firestore";
 import { PlusCircle } from "phosphor-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import InvoiceCard from "./components/InvoiceCard/InvoiceCard";
 import NewInvoiceModal from "./components/NewInvoiceModal/NewInvoiceModal";
+import { db } from "../src/firebase/config";
+import { ICardDetails } from "./@types/types";
 
 function App() {
-  const { isOpen, onToggle } = useDisclosure();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   function handleOpenModal() {
@@ -14,6 +16,18 @@ function App() {
   function handleCloseModal() {
     setIsModalOpen(false);
   }
+
+  const [invoices, setInvoices] = useState([]);
+
+  const userCollectionRef = collection(db, "invoices");
+
+  useEffect(() => {
+    const getInvoices = async () => {
+      const data = await getDocs(userCollectionRef);
+      setInvoices(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    };
+    getInvoices();
+  }, []);
 
   return (
     <Box
@@ -46,9 +60,19 @@ function App() {
           New invoice
         </Button>
 
-        <Slide direction="left" in={isOpen} style={{ zIndex: 10 }}>
-          <NewInvoiceModal isModalOpen={isModalOpen} onRequestClose={handleCloseModal} />
-        </Slide>
+        <NewInvoiceModal isModalOpen={isModalOpen} onRequestClose={handleCloseModal} />
+      </Flex>
+      <Flex>
+        {invoices.map((invoice: ICardDetails) => (
+          <InvoiceCard
+            key={invoice.id}
+            id={invoice.invoice_id}
+            name={invoice.client_name}
+            date={invoice.date}
+            status={invoice.status}
+            total={invoice.total_invoice}
+          />
+        ))}
       </Flex>
     </Box>
   );
