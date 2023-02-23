@@ -13,6 +13,7 @@ export interface ICardDetails {
 }
 
 export interface IInvoice {
+  id: string;
   bill_from: {
     street_address: string;
     city: string;
@@ -31,6 +32,12 @@ export interface IInvoice {
   date: string;
   project_description: string;
 
-  item_list: [item_name: string, qty: number, price: number, total: number];
+  items: Item[];
   total: number;
 }
+export type Item = {
+  name: string;
+  qty: number;
+  price: number;
+  total: number;
+};
