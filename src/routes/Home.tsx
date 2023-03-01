@@ -2,12 +2,14 @@ import { Box, Button, Collapse, Flex, Slide, Text, useDisclosure } from "@chakra
 import { collection, getDocs, getFirestore } from "firebase/firestore";
 import { PlusCircle } from "phosphor-react";
 import { useEffect, useState } from "react";
-import InvoiceCard from "./components/InvoiceCard/InvoiceCard";
-import NewInvoiceModal from "./components/NewInvoiceModal/NewInvoiceModal";
-import { db } from "../src/firebase/config";
-import { ICardDetails } from "./@types/types";
 
-function App() {
+import InvoiceCard from "../../src/components/InvoiceCard/InvoiceCard";
+import NewInvoiceModal from "../../src/components/NewInvoiceModal/NewInvoiceModal";
+import { db } from "../../src/firebase/config";
+import { ICardDetails, IInvoice } from "../@types/types";
+import SideMenu from "../components/SideMenu/SideMenu";
+
+function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   function handleOpenModal() {
@@ -24,7 +26,7 @@ function App() {
   useEffect(() => {
     const getInvoices = async () => {
       const data = await getDocs(userCollectionRef);
-      setInvoices(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+      setInvoices(data.docs.map((doc: IInvoice) => ({ ...doc.data(), invoice_id: doc.id })));
     };
     getInvoices();
   }, []);
@@ -62,20 +64,27 @@ function App() {
 
         <NewInvoiceModal isModalOpen={isModalOpen} onRequestClose={handleCloseModal} />
       </Flex>
-      <Flex>
-        {invoices.map((invoice: ICardDetails) => (
-          <InvoiceCard
-            key={invoice.id}
-            id={invoice.invoice_id}
-            name={invoice.client_name}
-            date={invoice.date}
-            status={invoice.status}
-            total={invoice.total_invoice}
-          />
-        ))}
-      </Flex>
+      <Box display="flex" flexDir="column" gap={2}>
+        {invoices.length === 0 ? (
+          <Text>There are no invoices yet</Text>
+        ) : (
+          <>
+            <Text>There are {invoices.length} invoices</Text>
+            {invoices.map((invoice: ICardDetails, index) => (
+              <InvoiceCard
+                key={index}
+                id={invoice.id}
+                name={invoice.data.client_name}
+                date={invoice.date}
+                status={invoice.status}
+                total={invoice.data.price}
+              />
+            ))}
+          </>
+        )}
+      </Box>
     </Box>
   );
 }
 
-export default App;
+export default Home;
