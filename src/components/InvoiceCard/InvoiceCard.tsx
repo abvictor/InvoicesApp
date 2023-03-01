@@ -49,7 +49,7 @@ const InvoiceCard = ({ id, date, name, total, status }: ICardDetails) => {
               )}
             </Text>
           </GridItem>
-          <Status status="Paid" />
+          <Status status={status} />
           <GridItem>
             <MdOutlineKeyboardArrowRight color="#6B46C1" size={32} />
           </GridItem>

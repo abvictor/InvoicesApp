@@ -11,7 +11,9 @@ const Status = ({ status }: Pick<ICardDetails, "status">) => {
           align="center"
           justifyContent="center"
           gap="2"
-          bgColor="green.400"
+          bgColor="green.600"
+          color="green.200"
+          opacity={0.9}
           w={28}
           h="10"
           borderRadius={4}
@@ -27,7 +29,8 @@ const Status = ({ status }: Pick<ICardDetails, "status">) => {
           align="center"
           justifyContent="center"
           gap="2"
-          bgColor="red.400"
+          bgColor="orange.500"
+          color="orange.200"
           w={28}
           h="8"
           borderRadius={4}
@@ -44,7 +47,7 @@ const Status = ({ status }: Pick<ICardDetails, "status">) => {
           justifyContent="center"
           gap="2"
           bgColor="white"
-          color="gray.600"
+          color="gray.300"
           opacity={0.7}
           w={28}
           h="8"

@@ -14,6 +14,7 @@ export interface ICardDetails {
 
 export interface IInvoice {
   id: string;
+  status: string;
   bill_from: {
     street_address: string;
     city: string;
