@@ -3,11 +3,14 @@ import { useEffect, useState } from 'react'
 import {BsFillCircleFill} from 'react-icons/bs'
 import {IoIosArrowForward} from 'react-icons/io'
 import { IInvoice, IInvoiceCard } from '../../@types/types'
+import { useNavigate } from 'react-router-dom'
 
 const Invoice = ({id, date, name, status, total}:IInvoiceCard) => {
 
   const [invoiceData, setInvoiceData] = useState([]);
   const [invoiceStatus, setInvoiceStatus] = useState("");
+
+  const navigate = useNavigate()
 
   function getInvoiceItems(){
     let invoices:any = localStorage.getItem("invoices")
@@ -21,7 +24,7 @@ const Invoice = ({id, date, name, status, total}:IInvoiceCard) => {
     } else if (status === "Pending") {
       setInvoiceStatus("orange.400");
     } else {
-      setInvoiceStatus("white.300");
+      setInvoiceStatus("white");
     }
   }, [status]);
 
@@ -29,24 +32,26 @@ const Invoice = ({id, date, name, status, total}:IInvoiceCard) => {
     getInvoiceItems()
   }, []);
 
+  let formatDate = new Date(date)
+
   return (
-    <Box display="flex" justifyContent="space-between" alignItems="center" w="730px" h="24" bg="#1E2139" mt="12" p="1.5rem" color="white" borderRadius="8px" _hover={{border: "1px solid #7C5DFA"}}>
-        <Box display="flex">
-           <Text color="#7583C3">#</Text>
-           <Text color="white" fontWeight="bold" fontSize="sm">{id}</Text>
-        </Box>
+      <Box display="flex" justifyContent="space-between" alignItems="center" w="730px" h="20" bg="#1E2139" mt="4" p="1.5rem" color="white" borderRadius="8px" _hover={{border: "1px solid #7C5DFA", cursor: "pointer"}} onClick={()=>navigate(`/invoice/${id}`)}>
+      <Box display="flex">
+         <Text color="#7583C3">#</Text>
+         <Text color="white" fontWeight="bold" fontSize="sm">{id}</Text>
+      </Box>
       <Text fontSize="sm" fontWeight="thin">
-        {date}
+        {new Intl.DateTimeFormat('en-US', { dateStyle: 'medium'}).format(formatDate)}
       </Text>
-      <Text fontSize="sm" fontWeight="thin">
+      <Text fontSize="sm" fontWeight="medium">
         {name}
       </Text>
       <Text fontSize="xl" fontWeight="bold">
-        ${total}
+        {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(total)}
       </Text>
-      <Box display="flex" alignItems="center" bgColor={invoiceStatus} justifyContent="center" w="auto" p="2" h="8" borderRadius="4" gap="2" >
+      <Box display="flex" alignItems="center" color={invoiceStatus}  justifyContent="center" w="24" p="2" h="10" borderRadius="4" gap="2" >
         <BsFillCircleFill size={8}/>
-         <Text fontWeight="bold">{status}</Text>
+        <Text fontWeight="bold">{status}</Text>
       </Box>
       <IoIosArrowForward color="#7C5DFA" size={20}/>
     </Box>

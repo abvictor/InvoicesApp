@@ -4,7 +4,7 @@ import dollar from '../../assets/dollar.png'
 
 const SideBar = () => {
   return (
-    <Box display="flex" flexDirection="column" justifyContent="space-between" alignItems="center" w="28" bg={'#252945'} h="100vh" position={"relative"} right="0" borderRightRadius="24">
+    <Box display="flex" flexDirection="column" justifyContent="space-between" left="0" top="0" alignItems="center" w="28" bg={'#252945'} h="100vh" position={"relative"} right="0" borderRightRadius="24">
       <Box display="flex" flexDirection="column" alignContent="center" justifyContent="end" w="100%" h="28" bgColor="#7C5DFA" borderRightRadius="24">
         <Box display="flex" alignItems="center" justifyItems="center" justifyContent="center" w="100&" h="52%" bgColor="#9277FF" top="0"  transition=".9s" borderBottomRightRadius="24" borderTopLeftRadius="24" _hover={{height: "90%", transition: ".9s", borderTopRightRadius: "12px" }}>
         <img src={dollar} style={{height: "3rem", width: "3rem", position: "absolute"}}/>

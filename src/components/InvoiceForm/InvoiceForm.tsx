@@ -4,7 +4,7 @@ import { Dock } from 'react-dock'
 import { useState } from 'react'
 import { useForm, SubmitHandler } from "react-hook-form"
 import { yupResolver } from '@hookform/resolvers/yup';
-
+import {generateId} from '../../helpers/IdGenerator'
 
 import {InvoiceFormProps} from '../../@types/types'
 import { invoiceSchema } from '../../helpers/formValidator'
@@ -14,32 +14,38 @@ const InvoiceForm = ({isOpen, handleClose}:InvoiceFormProps) => {
    const {register, handleSubmit: onSubmit, formState: { errors }} = useForm({resolver: yupResolver(invoiceSchema)})
    const [status, setStatus] = useState('')
 
+   const [itemFields, setItemFields] = useState([
+    { item_name: '', item_qty: '', item_price: '' },
+ ]);
+
    function handleSubmit(e: any) {
-      function gerarNumeroAleatorio() {
-          return Math.floor(Math.random() * 9000) + 1000;
-      }
-      let id = gerarNumeroAleatorio();
-  
-      const storedInvoices = localStorage.getItem('invoices');
-  
-      const invoices = storedInvoices ? JSON.parse(storedInvoices) : [];
-  
-      const dataToStore = {
-          invoice: {
-              ...e,
-              status: status,
-              id: id
-          }
-      };
-      invoices.push(dataToStore);
-  
-      try {
-          localStorage.setItem('invoices', JSON.stringify(invoices));
-      } catch (error) {
-          console.log(error);
-      }
-      handleClose();
-  }
+    
+    const storedInvoices = localStorage.getItem('invoices');
+    const invoices = storedInvoices ? JSON.parse(storedInvoices) : [];
+
+    const dataToStore = {
+        invoice: {
+            ...e,
+            status: status,
+            id: generateId(),
+            total: 35000,
+            items: itemFields
+        }
+    };
+
+    invoices.push(dataToStore);
+
+    try {
+        localStorage.setItem('invoices', JSON.stringify(invoices));
+        handleClose();
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+const handleAddItem = () => {
+    setItemFields([...itemFields, { item_name: '', item_qty: '', item_price: '' }]);
+ };
 
   return (
     <Dock
@@ -131,36 +137,53 @@ const InvoiceForm = ({isOpen, handleClose}:InvoiceFormProps) => {
            <Text fontSize="sm" color="white" mt="2">Project Description</Text>
            <Input  color="white" fontWeight="semibold" w="630px" h="12" bgColor="#1E2139" border="none" {...register('invoice_description')}/>
            <Text color="red.400">{errors?.invoice_description?.message}</Text>
+
            <Box mt="4">
              <Text fontWeight="bold" fontSize="2xl" color="gray.500">Item List</Text>
+             {itemFields.map((item, index) => (
+                <Flex gap="2" key={index}>
+                    <Stack>
+                        <Text fontSize="sm" color="white" mt="2">Item Name</Text>
+                        <Input
+                            w="100%"
+                            h="12"
+                            bgColor="#1E2139"
+                            border="none"
+                            color="white"
+                            {...register(`itemFields[${index}].item_name`)}
+                        />
+                        <Text color="red.400">{errors?.itemFields?.[index]?.item_name?.message}</Text>
+                    </Stack>
+                    <Stack>
+                        <Text fontSize="sm" color="white" mt="2">Item Qty.</Text>
+                        <Input
+                            w="100%"
+                            h="12"
+                            bgColor="#1E2139"
+                            border="none"
+                            color="white"
+                            {...register(`itemFields[${index}].item_qty`)}
+                        />
+                        <Text color="red.400">{errors?.itemFields?.[index]?.item_qty?.message}</Text>
+                    </Stack>
+                    <Stack>
+                        <Text fontSize="sm" color="white" mt="2">Item Price</Text>
+                        <Input
+                            w="100%"
+                            h="12"
+                            bgColor="#1E2139"
+                            border="none"
+                            color="white"
+                            {...register(`itemFields[${index}].item_price`)}
+                        />
+                        <Text color="red.400">{errors?.itemFields?.[index]?.item_price?.message}</Text>
+                    </Stack>
+                   
+                </Flex>
+                ))}
+      
 
-             <Flex gap="2">
-              <Stack>
-                  <Text fontSize="sm" color="white" mt="2">Item Name</Text>
-                  <Input w="100%" h="12" bgColor="#1E2139" border="none" color="white" {...register('item_name')}/>
-                  <Text color="red.400">{errors?.item_name?.message}</Text>
-
-               </Stack>
-               <Stack>
-                  <Text fontSize="sm" color="white" mt="2">Qty.</Text>
-                  <Input w="100%" h="12" bgColor="#1E2139" border="none" color="white" {...register('item_qty')}/>
-                  <Text color="red.400">{errors?.item_qty?.message}</Text>
-               </Stack>
-               <Stack>
-                  <Text fontSize="sm" color="white" mt="2">Price</Text>
-                  <Input w="100%" h="12" bgColor="#1E2139" border="none" color="white"{...register('item_price')}/>
-                  <Text color="red.400">{errors?.item_price?.message}</Text>
-               </Stack>   
-               <Stack align="center" justify="center">
-                  <Text fontSize="sm" color="white" mt="2">Total</Text>
-                  <Flex mt="2" gap="4" ml="8">
-                    <Box><Text bg="transparent" w="100%" h="12" color="white" fontWeight="bold">0.00</Text></Box>
-                    <FaTrash size={16} color="#9277FF" />
-                  </Flex>
-               </Stack>      
-            </Flex>
-
-            <Button w="100%" h="12" mt="4" bgColor="#1E2139" color="white" borderRadius="28" fontWeight="bold" _hover={{backgroundColor: "#1E2129"}}> + Add New Item</Button>
+            <Button w="100%" h="12" mt="4" bgColor="#1E2139" color="white" borderRadius="28" fontWeight="bold" _hover={{backgroundColor: "#1E2129"}} onClick={handleAddItem}> + Add New Item</Button>
            </Box>
         <Flex justifyContent="space-between" mt="8">
             <Button h="12" bgColor="#1E2139" color="white" borderRadius="28" onClick={handleClose}>Discard</Button>
